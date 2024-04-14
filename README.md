@@ -1,2 +1,2 @@
 # infrastructure_automation_terraform
-`hello`
+`Automating the infrastructure using Terraform first and install other required automation tools in it.`
