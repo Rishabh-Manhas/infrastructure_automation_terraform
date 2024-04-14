@@ -1,0 +1,51 @@
+---
+- name: Installing Python and Jenkins
+  hosts: all
+  remote_user: ec2-user
+   
+  tasks:
+  - name: Update Package Repositories
+    command: yum update -y
+    become: true
+
+  - name: Installing Python
+    dnf:
+      name: python3
+      state: present
+    become: true
+
+  - name: Install Java
+    dnf:
+      name: java-17-amazon-corretto.x86_64
+      state: present
+    become: true
+   
+  - name: Add Jenkins Repository
+    get_url: 
+      url: https://pkg.jenkins.io/redhat/jenkins.repo
+      dest: /etc/yum.repos.d/jenkins.repo
+    become: true
+  
+  - name: Import Jenkins key 
+    rpm_key:
+      key: https://pkg.jenkins.io/redhat/jenkins.io-2023.key
+      state: present
+    become: true
+
+  - name: Install Jenkins
+    dnf:
+      name: jenkins
+      state: present
+    become: true
+
+  - name: Start Jenkins Service
+    service:
+      name: jenkins
+      state: started
+    become: true
+  - name: Retrieve initial admin password
+    shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: initial_admin_password
+    become: true
+  - debug:
+        msg: "Initial admin password: {{ initial_admin_password.stdout }}"    
